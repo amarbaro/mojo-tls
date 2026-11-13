@@ -13,7 +13,7 @@ TLS 1.3 and TLS 1.2, client and server, with X.509 certificate validation, in pu
 foreign calls except a few libc functions (`memcpy`, `getrandom`, `explicit_bzero`, `time`, and the socket calls in `tls.net`). 16.7k lines of Mojo under `src/tls/`. It speaks to openssl,
 Firefox, Chromium and Vivaldi in both directions (see Checks).
 
-**Status: 0.1.1, internally audited (14 findings, see the [release note](docs/releases/v0.1.1.md)), not independently audited.** Read [Security](#security) before you put it on the open internet.
+**Status: 0.1.2, internally audited (14 findings, see the [release note](docs/releases/v0.1.1.md)), not independently audited.** Read [Security](#security) before you put it on the open internet.
 
 ## What you get
 
