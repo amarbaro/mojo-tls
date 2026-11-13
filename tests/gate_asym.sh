@@ -20,7 +20,9 @@ done
 if [ -x .work/ct ] && [ -f .work/oracle/rsa2048.pem ]; then
   parts=$(python3 -I tools/rsa_parts.py .work/oracle/rsa2048.pem)
   # shellcheck disable=SC2086
-  for try in 1 2 3; do taskset -c "${CT_CPU:-5}" .work/ct "${CT_N:-20000}" $parts && break; [ $try = 3 ] && fail ct "timing leak suspected in 3 tries"; echo "ct: try $try failed, retrying"; done
+  cpu=${CT_CPU:-$(( $(nproc) - 1 ))}  # pin to the last core this machine has: a fixed core id fails on a smaller runner (GitHub 2026-11-13: CPU 5 on 4 vCPUs)
+  taskset -c "$cpu" true || fail ct "cannot pin to CPU $cpu (taskset), the timing check did not run"
+  for try in 1 2 3; do taskset -c "$cpu" .work/ct "${CT_N:-20000}" $parts && break; [ $try = 3 ] && fail ct "timing leak suspected in 3 tries"; echo "ct: try $try failed, retrying"; done
 fi
 tests/mutants_asym.sh || fail mutants "survivor"
 echo "PASS gate"
