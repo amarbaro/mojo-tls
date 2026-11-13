@@ -1,0 +1,54 @@
+# name@file under src/@sed -E expression[@build flags]. Each must make the gate fail (tests/sym_gate.sh).
+k256-high@tls/sym/sha2.mojo@s/0x7137449123EF65CD/0x7137449223EF65CD/
+k512-low@tls/sym/sha2.mojo@s/0x428A2F98D728AE22/0x428A2F98D728AE23/
+iv384@tls/sym/sha2.mojo@s/0xCBBB9D5DC1059ED8/0xCBBB9D5DC1059ED9/
+sha-pad@tls/sym/sha2.mojo@s/if n \+ 1 > Self.BLOCK - Self.BLOCK \/\/ 8:/if n + 1 >= Self.BLOCK - Self.BLOCK \/\/ 8:/
+sha-rot@tls/sym/sha2.mojo@s/2, 13, 22, 6, 11, 25/2, 13, 23, 6, 11, 25/
+hmac-ipad@tls/sym/mac.mojo@s/k\[i\] \^= 0x36$/k[i] ^= 0x37/
+hmac-longkey@tls/sym/mac.mojo@s/len\(key\) > H.BLOCK/len(key) >= H.BLOCK/
+hkdf-guard@tls/sym/mac.mojo@s/n > 255 \* H.OUT/n > 256 * H.OUT/
+hkdf-counter@tls/sym/mac.mojo@s/m.append\(UInt8\(i\)\)/m.append(UInt8(i + 1))/
+hkdf-label@tls/sym/mac.mojo@s/"tls13 "/"tls12 "/
+prf-seed@tls/sym/mac.mojo@s/var a = hmac\[H\]\(secret, ls\)/var a = hmac[H](secret, seed)/
+aes-affine@tls/sym/aes.mojo@s/\^ 0x63$/^ 0x62/
+aes-xt@tls/sym/aes.mojo@s/\* 0x1B\)/* 0x1C)/
+aes-rounds@tls/sym/aes.mojo@s/6 \+ 4 \* nk/5 + 4 * nk/
+aes-rcon@tls/sym/aes.mojo@s/rcon = _xt\(V16\(rcon\)\)\[0\]/rcon = rcon + 1/
+aes-sbox-soft@tls/sym/aes.mojo@s/var x31 = _mul\(_mul\(x15, x15\), x\)/var x31 = _mul(_mul(x15, x15), x3)/@-D TLS_SOFT_AES=true
+aes-mixcol-soft@tls/sym/aes.mojo@s/v = _xt\(v \^ r1\) \^ r1/v = _xt(v ^ r1) ^ v/@-D TLS_SOFT_AES=true
+aes-shiftrows-soft@tls/sym/aes.mojo@s/shuffle\[0, 5, 10, 15, 4, 9, 14, 3, 8, 13, 2, 7, 12, 1, 6, 11\]/shuffle[0, 5, 10, 15, 4, 9, 14, 3, 8, 13, 2, 7, 12, 1, 11, 6]/@-D TLS_SOFT_AES=true
+gcm-reduce@tls/sym/gcm.mojo@s/_clmul\(hi\[1\], 0x87\)/_clmul(hi[1], 0x86)/
+gcm-mid@tls/sym/gcm.mojo@s/mid \^= _clmul\(x\[0\] \^ x\[1\], h\[0\] \^ h\[1\]\)/mid ^= _clmul(x[0] ^ x[1], h[0])/
+gcm-power@tls/sym/gcm.mojo@s/self.hp\[7 - i\]\)/self.hp[i])/
+gcm-lenblock@tls/sym/gcm.mojo@s/byte_swap\(UInt64\(n\) \* 8\)/byte_swap(UInt64(n) * 4)/
+gcm-aadpad@tls/sym/gcm.mojo@s/range\(min\(16, n - off\)\)/range(min(15, n - off))/
+gcm-ctr-start@tls/sym/gcm.mojo@s/var ctr = UInt32\(2\)/var ctr = UInt32(3)/
+gcm-ctr8@tls/sym/gcm.mojo@s/ctr \+= 8$/ctr += 7/
+gcm-notag@tls/sym/gcm.mojo@s/raise Error\("tls: bad record mac"\)/return/
+gcm-j0@tls/sym/gcm.mojo@s/j0\[15\] = 1/j0[15] = 2/
+gcm-bmul-soft@tls/sym/gcm.mojo@s/\(x3 \* y1\)$/(x3 * y2)/@-D TLS_SOFT_AES=true
+gcm-rev-soft@tls/sym/gcm.mojo@s/\) >> 1\)$/) >> 2)/@-D TLS_SOFT_AES=true
+chacha-const@tls/sym/chacha.mojo@s/0x61707865/0x61707866/
+chacha-rot@tls/sym/chacha.mojo@s/rotate_bits_left\[7\]/rotate_bits_left[6]/
+chacha-ctr@tls/sym/chacha.mojo@s/x\[12\] = V\(ctr\) \+ iota\[U32, W\]\(\)/x[12] = V(ctr)/
+chacha-diag@tls/sym/chacha.mojo@s/_qr\[W, 3, 4, 9, 14\]/_qr[W, 3, 4, 9, 13]/
+chacha-tailstep@tls/sym/chacha.mojo@s/        c \+= 4$/        c += 3/
+chacha-bulkstep@tls/sym/chacha.mojo@s/        c \+= 16$/        c += 15/
+chacha-aead-ctr@tls/sym/chacha.mojo@s/chacha20_xor\(self.key, nw, 1, p, n\)/chacha20_xor(self.key, nw, 0, p, n)/
+poly-clamp@tls/sym/chacha.mojo@s/0xFFFFFC0FFFF/0xFFFFFC0FFFB/
+poly-hibit@tls/sym/chacha.mojo@s/0x3FFFFFFFFFF\) [|] hibit/0x3FFFFFFFFFF)/
+poly-carry@tls/sym/chacha.mojo@s/h0 \+= c \* 5/h0 += c * 4/
+poly-select@tls/sym/chacha.mojo@s/var keep = \(g2 >> 63\) - 1/var keep = UInt64(0)/
+poly-pad@tls/sym/chacha.mojo@s/var t1 = self.pad\[1\]/var t1 = self.pad[0]/
+poly-tailbyte@tls/sym/chacha.mojo@s/t\[n % 16\] = 1/t[n % 16] = 2/
+poly-aeadpad@tls/sym/chacha.mojo@s/self.blocks\(t.unsafe_ptr\(\), 16, 1 << 40\)/self.blocks(t.unsafe_ptr(), 16, 0)/
+poly-lens@tls/sym/chacha.mojo@s/lens\[1\] = UInt64\(n\)/lens[1] = UInt64(n + 1)/
+chacha-notag@tls/sym/chacha.mojo@s/raise Error\("tls: bad record mac"\)/return/
+poly-r2@tls/sym/chacha.mojo@s/self.r\[2\] = \(k\[1\] >> 24\) & 0x00FFFFFFC0F/self.r[2] = (k[1] >> 24) \& 0x00FFFFFFC0E/
+gcm-fusetail@tls/sym/gcm.mojo@s/n - done\)$/n - done - 1)/
+gcm-xy@tls/sym/gcm.mojo@s/x \^= y$/pass/
+poly-tail-carry@tls/sym/chacha.mojo@s/h2 \+= h1 >> 44$/h2 += 0/
+gcm-noncelen@tls/sym/gcm.mojo@s/len\(nonce\) != 12 or n < 0 or/n < 0 or/
+chacha-noncelen@tls/sym/chacha.mojo@s/len\(nonce\) != 12 or n < 0 or/n < 0 or/
+chacha-keylen@tls/sym/chacha.mojo@s/if len\(key\) != 32:/if len(key) > 99:/
+aes-keylen@tls/sym/aes.mojo@s/if len\(key\) != 16 and len\(key\) != 32:/if len(key) > 99:/

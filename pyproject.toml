@@ -1,0 +1,13 @@
+[project]
+name = "mojo-tls"
+version = "0.1.1"
+description = "TLS 1.3 and 1.2 client and server for Mojo, with X.509, in pure Mojo: no OpenSSL, no C library"
+license = "Apache-2.0"
+requires-python = ">=3.11,<3.16"
+dependencies = ["mojo>=1.2.0,<1.3"]
+
+[tool.mojo]
+deps = ["mojo-aio"]  # pinned for source builds in scripts/deps.sh
+
+[dependency-groups]
+dev = ["cryptography"]  # test oracles only

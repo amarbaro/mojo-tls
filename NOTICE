@@ -1,0 +1,61 @@
+mojo-tls
+Copyright 2026 AMARBARO · amarbaro.org labs <dev@amarbaro.org>
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Third-party material, by kind. Nothing below is linked as a library: mojo-tls is pure Mojo and calls no C code.
+
+1. Code and design taken from other projects
+
+Mosaad-M-tls, https://github.com/Mosaad-M/tls (MIT). The constant-time big-number loop and curve formulas in
+src/tls/asym/bn.mojo and src/tls/asym/ec.mojo follow its crypto/ec_ct.mojo; src/tls/sym/gcm.mojo follows its GHASH/GCM
+structure (the code here is rewritten). Used under the MIT licence:
+
+  MIT License
+  
+  Copyright (c) 2026 mmosaad
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+Public Suffix List, https://publicsuffix.org (MPL-2.0, https://mozilla.org/MPL/2.0/). src/tls/x509/psl.mojo is generated
+from it by tools/gen_psl.py (the version and commit are in the file header) and keeps the MPL-2.0 terms: the data is
+unmodified apart from the filtering the generator documents. Its source is the list at publicsuffix.org.
+
+2. Test vectors and test data (tests/, tools/)
+
+Project Wycheproof, https://github.com/C2SP/wycheproof (Apache-2.0): tests/vec/wyche-aead.txt and wyche-mac.txt are
+converted from its testvectors_v1 files; the asymmetric vectors (x25519, x448, ECDH, ECDSA, RSA) are fetched by
+tests/gate_asym.sh from a clone at test time and are not distributed here.
+
+x509-limbo, https://github.com/C2SP/x509-limbo (Apache-2.0): fetched at test time by tools/limbo_fetch.sh (not in this
+repository); tests/limbo_known.txt lists case ids only.
+
+RFC 8448 (TLS 1.3 example traces), RFC 7748, RFC 5903, RFC 6979 and RFC 8439: known-answer values quoted in
+tests/vectors/rfc8448.txt, tests/vectors/kat.txt and tests/kat.mojo. RFC text is Copyright (c) IETF Trust and the persons
+identified as the document authors; code components and test values are used under the Revised BSD licence of the IETF
+Trust's Legal Provisions.
+
+Captured ClientHello messages in tests/vectors/ch_*.hex come from curl, OpenSSL, Python and Chromium (Vivaldi) talking to a local
+test socket; they contain no secrets.
+
+3. Tools run against mojo-tls, never shipped
+
+tlsfuzzer (GPL-2.0, https://github.com/tlsfuzzer/tlsfuzzer) and testssl.sh (GPL-2.0) are cloned into .work/tools by the
+local matrix (tests/matrix.sh) and run as separate programs; their code is not part of this repository. OpenSSL,
+curl, Python `cryptography`, Firefox and Chromium serve as oracles and interop peers in the same way.

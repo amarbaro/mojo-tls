@@ -1,0 +1,7 @@
+.work/
+.venv
+*.mojoc
+tests/data/*.key
+tests/data/*.srl
+.claude
+exchange/

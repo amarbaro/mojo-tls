@@ -1,0 +1,8 @@
+!webpki::cn::*	policy: CN ignored per RFC 9525, no hostname-matching effect (the SAN decides; tests/data bad_cn_victim proves a CN never matches)
+webpki::nc::permitted-dns-match-noncritical	conflicts with rfc5280::nc::permitted-dns-match-noncritical (invalid); non-critical name constraints are refused
+rfc5280::eku::ee-without-eku	conflicts with webpki::eku::ee-without-eku (invalid); a leaf without extendedKeyUsage is refused
+rfc5280::ca-as-leaf	conflicts with webpki::ca-as-leaf (invalid); a CA certificate in leaf position is refused
+pathlen::validation-ignores-pathlen-in-leaf	its leaf is a CA certificate: refused, see rfc5280::ca-as-leaf
+cve::cve-2024-0567	its anchor has no AKI and a different issuer, same as invalid rfc5280::aki::cross-signed-root-missing-aki; cannot be both
+rfc9881::ml-dsa-*	ML-DSA keys: no ML-DSA verifier in the stack (the stack verifies P-256, P-384 and RSA)
+!rfc5280::ski::root-missing-ski	policy: trust anchors are path-validation input (RFC 5280 6.1.1 d), real roots lack SKI (TWCA Global Root CA); intermediates still need SKI (rfc5280::ski::intermediate-missing-ski stays refused)

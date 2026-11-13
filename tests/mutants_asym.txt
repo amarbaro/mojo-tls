@@ -1,0 +1,21 @@
+bn.mojo	r[i] = (a[i] & mask) | (b[i] & ~mask)	r[i] = (b[i] & mask) | (a[i] & ~mask)	vectors	.work/vectors.txt
+x25519.mojo	k[31] |= 64	k[31] |= 0	vectors	.work/vectors.txt x25519
+ec.mojo	 or lt(s, c.o.m) == 0:	:	vectors	.work/vectors.txt ecdsa
+ec.mojo	if b[0] >= 0x80 or (b[0] == 0 and (n == 1 or b[1] < 0x80)):	if b[0] >= 0x80:	vectors	.work/vectors.txt ecdsa
+ec.mojo	return is_zero(sub(mont_mul(ym, ym, c.f), rhs, c.f)) == 1	return True	vectors	.work/vectors.txt ecdh ecdsa
+rsa.mojo	em[k - 1] != 0xBC or 	False or 	vectors	.work/vectors.txt rsa_pss
+rsa.mojo	em[k - len(t) - 1] = 0	em[k - len(t) - 1] = 1	vectors	.work/vectors.txt rsa_pkcs1
+rsa.mojo	var t = adc(s[i], sq[i] if i < H else 0, carry)	var t = adc(s[i], 0, carry)	oracle
+ec.mojo	m.append(UInt8(tag))	m.append(UInt8(1))	kat
+ec.mojo	add(em, mont_mul(rm, dm, c.o), c.o)	add(em, rm, c.o)	kat
+ec.mojo	h[: min(len(h), 8 * N)]	h[: 8 * N - 1]	kat
+x25519.mojo	if acc == 0:	if acc == 7:	kat
+rsa.mojo	e[H] = c + c2	e[H] = 0	kat
+rsa.mojo	pm1[0] -= 1	pm1[0] -= 0	kat
+bn.mojo	for _ in range(4):	for _ in range(3):	kat
+ec.mojo	r = point_add(r, sel, c.b, c.f)	r = point_add(r, sel, c.b, c.f) if nib != 0 else r.copy()	ct	6000
+rsa.mojo	if len(s) != len(n):	if False:	fuzz	.work/vectors.txt
+x448.mojo	k[55] |= 128	k[55] |= 0	vectors	.work/vectors.txt x448
+x448.mojo	k[0] &= 252	k[0] &= 255	vectors	.work/vectors.txt x448
+x448.mojo	m[3] = 0xFFFFFFFEFFFFFFFF	m[3] = 0xFFFFFFFFFFFFFFFF	kat
+ec.mojo	if len(d) != 48 or not in_range(from_be[6](d), c.o):	if len(d) != 48:	kat

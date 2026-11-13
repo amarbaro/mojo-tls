@@ -1,0 +1,48 @@
+# tlsfuzzer probes with a known verdict: script<TAB>exact probe name<TAB>x|e<TAB>reason. x = expected to fail (-x: an unexpected pass is an XPASS and fails the cell),
+# e = excluded (-e: flaky or not meaningful). Each is a deliberate scope limit or a stricter reading than RFC 8446, not a hidden bug.
+test-tls13-serverhello-random	TLS 1.3 with ffdhe2048	x	group out of scope (no FFDHE, no secp521r1)
+test-tls13-serverhello-random	TLS 1.3 with ffdhe3072	x	group out of scope (no FFDHE, no secp521r1)
+test-tls13-serverhello-random	TLS 1.3 with secp521r1	x	group out of scope (no FFDHE, no secp521r1)
+test-tls13-unrecognised-groups	known group ffdhe2048 and unknown groups from EC range, key_share of size 128	x	the script's 'known group' ffdhe2048 is out of scope (no FFDHE)
+test-tls13-unrecognised-groups	known group ffdhe2048 and unknown groups from EC range, key_share of size 256	x	the script's 'known group' ffdhe2048 is out of scope (no FFDHE)
+test-tls13-unrecognised-groups	known group ffdhe2048 and unknown groups from EC range, key_share of size 64	x	the script's 'known group' ffdhe2048 is out of scope (no FFDHE)
+test-tls13-unrecognised-groups	known group ffdhe2048 and unknown groups from FFDHE range, key_share of size 128	x	the script's 'known group' ffdhe2048 is out of scope (no FFDHE)
+test-tls13-unrecognised-groups	known group ffdhe2048 and unknown groups from FFDHE range, key_share of size 256	x	the script's 'known group' ffdhe2048 is out of scope (no FFDHE)
+test-tls13-unrecognised-groups	known group ffdhe2048 and unknown groups from FFDHE range, key_share of size 64	x	the script's 'known group' ffdhe2048 is out of scope (no FFDHE)
+test-tls13-unrecognised-groups	only unknown key_share from EC range, key_share of size 128 + ffdhe2048 in supported_groups	x	the script's 'known group' ffdhe2048 is out of scope (no FFDHE)
+test-tls13-unrecognised-groups	only unknown key_share from EC range, key_share of size 256 + ffdhe2048 in supported_groups	x	the script's 'known group' ffdhe2048 is out of scope (no FFDHE)
+test-tls13-unrecognised-groups	only unknown key_share from EC range, key_share of size 64 + ffdhe2048 in supported_groups	x	the script's 'known group' ffdhe2048 is out of scope (no FFDHE)
+test-tls13-unrecognised-groups	only unknown key_share from FFDHE range, key_share of size 128 + ffdhe2048 in supported_groups	x	the script's 'known group' ffdhe2048 is out of scope (no FFDHE)
+test-tls13-unrecognised-groups	only unknown key_share from FFDHE range, key_share of size 256 + ffdhe2048 in supported_groups	x	the script's 'known group' ffdhe2048 is out of scope (no FFDHE)
+test-tls13-unrecognised-groups	only unknown key_share from FFDHE range, key_share of size 64 + ffdhe2048 in supported_groups	x	the script's 'known group' ffdhe2048 is out of scope (no FFDHE)
+test-tls13-empty-alert	empty alert with 2 bytes of padding using application keys	x	zero-length alert: we answer decode_error(50), the script wants unexpected_message(10); RFC 8446 5.1/6 fix no alert for it
+test-tls13-empty-alert	empty alert with 2 bytes of padding using handshake keys	x	zero-length alert: we answer decode_error(50), the script wants unexpected_message(10); RFC 8446 5.1/6 fix no alert for it
+test-tls13-empty-alert	empty alert with 30 bytes of padding using application keys	x	zero-length alert: we answer decode_error(50), the script wants unexpected_message(10); RFC 8446 5.1/6 fix no alert for it
+test-tls13-empty-alert	empty alert with 30 bytes of padding using handshake keys	x	zero-length alert: we answer decode_error(50), the script wants unexpected_message(10); RFC 8446 5.1/6 fix no alert for it
+test-tls13-empty-alert	empty alert with 5 bytes of padding using application keys	x	zero-length alert: we answer decode_error(50), the script wants unexpected_message(10); RFC 8446 5.1/6 fix no alert for it
+test-tls13-empty-alert	empty alert with 5 bytes of padding using handshake keys	x	zero-length alert: we answer decode_error(50), the script wants unexpected_message(10); RFC 8446 5.1/6 fix no alert for it
+test-tls13-empty-alert	empty alert with no padding using application keys	x	zero-length alert: we answer decode_error(50), the script wants unexpected_message(10); RFC 8446 5.1/6 fix no alert for it
+test-tls13-empty-alert	empty alert with no padding using handshake keys	x	zero-length alert: we answer decode_error(50), the script wants unexpected_message(10); RFC 8446 5.1/6 fix no alert for it
+test-tls13-legacy-version	version (0, 0)	x	RFC 8446 4.2.1: with supported_versions the server must not use legacy_version, so we negotiate 1.3; the script expects protocol_version
+test-tls13-legacy-version	version (0, 1)	x	RFC 8446 4.2.1: with supported_versions the server must not use legacy_version, so we negotiate 1.3; the script expects protocol_version
+test-tls13-legacy-version	version (0, 2)	x	RFC 8446 4.2.1: with supported_versions the server must not use legacy_version, so we negotiate 1.3; the script expects protocol_version
+test-tls13-legacy-version	version (1, 0)	x	RFC 8446 4.2.1: with supported_versions the server must not use legacy_version, so we negotiate 1.3; the script expects protocol_version
+test-tls13-legacy-version	version (1, 2)	x	RFC 8446 4.2.1: with supported_versions the server must not use legacy_version, so we negotiate 1.3; the script expects protocol_version
+test-tls13-legacy-version	version (1, 3)	x	RFC 8446 4.2.1: with supported_versions the server must not use legacy_version, so we negotiate 1.3; the script expects protocol_version
+test-tls13-legacy-version	version (2, 0)	x	RFC 8446 4.2.1: with supported_versions the server must not use legacy_version, so we negotiate 1.3; the script expects protocol_version
+test-tls13-legacy-version	version (3, 0)	x	RFC 8446 4.2.1: with supported_versions the server must not use legacy_version, so we negotiate 1.3; the script expects protocol_version
+test-tls13-record-layer-limits	max size of Finished msg, with 16587 bytes of record layer padding TLS_AES_128_GCM_SHA256	x	the script wants record_overflow for a 16640-byte ciphertext (inner plaintext 16624 > 2^14+1, tlslite-ng's reading); RFC 8446 5.2 caps only the ciphertext at 2^14+256, which this record meets exactly, so we accept it and send the ticket
+test-tls13-record-layer-limits	max size of Finished msg, with 16587 bytes of record layer padding TLS_CHACHA20_POLY1305_SHA256	x	the script wants record_overflow for a 16640-byte ciphertext (inner plaintext 16624 > 2^14+1, tlslite-ng's reading); RFC 8446 5.2 caps only the ciphertext at 2^14+256, which this record meets exactly, so we accept it and send the ticket
+test-tls13-record-layer-limits	too big plaintext, size: 2**14 - 8, with an additional 9 bytes of padding, cipher TLS_AES_128_GCM_SHA256	x	'too big plaintext': we enforce the RFC 8446 5.2 ciphertext limit 2^14+256 (content 2^14 + type + padding), the script wants a stricter inner limit; 'max size of Finished': the script waits for a NewSessionTicket or an alert and we send neither (no tickets)
+test-tls13-record-layer-limits	too big plaintext, size: 2**14 - 8, with an additional 9 bytes of padding, cipher TLS_CHACHA20_POLY1305_SHA256	x	'too big plaintext': we enforce the RFC 8446 5.2 ciphertext limit 2^14+256 (content 2^14 + type + padding), the script wants a stricter inner limit; 'max size of Finished': the script waits for a NewSessionTicket or an alert and we send neither (no tickets)
+test-tls13-unencrypted-alert	unencrypted Alert	x	after the keys exist we answer a plaintext alert with unexpected_message then close; the script expects a bare close
+test-tls13-signature-algorithms	32715 invalid schemes	e	a ClientHello of 64 KiB (32715 signature schemes) in one oversized record: refused by the 64 KiB handshake cap; the verdict flips between runs under load
+test-tls13-signature-algorithms	duplicated 32715 non-rsa schemes	e	a ClientHello of 64 KiB (32715 signature schemes) in one oversized record: refused by the 64 KiB handshake cap; the verdict flips between runs under load
+test-tls13-signature-algorithms	tolerance 32715 methods	e	a ClientHello of 64 KiB (32715 signature schemes) in one oversized record: refused by the 64 KiB handshake cap; the verdict flips between runs under load
+test-tls13-signature-algorithms	tolerance 32715 methods with sig_alg_cert	e	a ClientHello of 64 KiB (32715 signature schemes) in one oversized record: refused by the 64 KiB handshake cap; the verdict flips between runs under load
+test-tls13-session-resumption	use TLS 1.2 ticket in TLS 1.3	x	the script's TLS 1.2 leg sends no extended_master_secret; our server refuses that by policy (docs/tls12.md)
+test-tls13-session-resumption	sanity - TLS 1.2	x	the script's TLS 1.2 leg sends no extended_master_secret; our server refuses that by policy (docs/tls12.md)
+test-tls13-session-resumption	session resumption - PSK_ONLY	x	psk_ke (no key share) is not supported: resumption is psk_dhe_ke only (docs/tls13.md)
+test-tls13-0rtt-garbage	handshake with invalid 0-RTT and unknown version (downgrade to TLS 1.2)	x	the script's TLS 1.2 leg sends no extended_master_secret; our server refuses that by policy (docs/tls12.md)
+test-tls13-ecdsa-in-certificate-verify	check sigalgs in cert request	x	the probe answers the CertificateRequest with an empty Certificate and expects the handshake to go on (optional client authentication); require_client_cert answers certificate_required (RFC 8446 4.4.2.4)
+test-tls13-certificate-verify	check sigalgs in cert request	x	the probe answers the CertificateRequest with an empty Certificate and expects the handshake to go on (optional client authentication); require_client_cert answers certificate_required (RFC 8446 4.4.2.4)

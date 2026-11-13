@@ -1,0 +1,12 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: write   # the badge step pushes the orphan `badges` branch (main pushes only)
+jobs:
+  ci:
+    uses: amarbaro/mojo-libs/.github/workflows/lib-ci.yml@v1
+    with:
+      apt: openssl

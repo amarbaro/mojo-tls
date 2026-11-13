@@ -1,0 +1,60 @@
+# name | file | perl substitution (applied with -0pi to src/<file>) | stage that must fail
+der_minimal_length | tls/x509/der.mojo | s/if l < 0x80:/if l < 0x00:/ | parse
+der_int_minimal | tls/x509/der.mojo | s/\(c\[0\] == 0 and c\[1\] < 0x80\)/(False)/ | parse
+time_pivot | tls/x509/der.mojo | s/y >= 50/y >= 51/ | parse
+validity_swapped | tls/x509/cert.mojo | s/self.not_before = val.time\(\)\n(\s+)self.not_after = val.time\(\)/self.not_after = val.time()\n$1self.not_before = val.time()/ | parse
+duplicate_ext_allowed | tls/x509/cert.mojo | s/if same\(p, o\):/if False:/ | parse
+b64_pad_unchecked | tls/x509/pem.mojo | s/pad != \(4 - r\) % 4/False/ | parse
+ca_check_removed | tls/x509/chain.mojo | s/if not \(c.has_bc and c.is_ca\):/if False:/ | chain
+pathlen_loosened | tls/x509/chain.mojo | s/below > c.path_len:/below > c.path_len + 5:/ | chain
+expiry_ignored | tls/x509/chain.mojo | s/if now > c.not_after:/if False:/ | chain
+not_yet_valid_ignored | tls/x509/chain.mojo | s/if now < c.not_before:/if False:/ | chain
+sha1_accepted | tls/x509/sigs.mojo | s/raise Error\("tls: x509: sha1 signature refused"\)/return/ | chain
+wildcard_tld | tls/x509/chain.mojo | s/if dots < 1 or/if dots < 0 or/ | parse
+nc_excluded_ignored | tls/x509/chain.mojo | s/if _dns_under\(ln, lb\) or \(wild and _one_label_below\(lb, stem\)\):/if False:/ | chain
+ip_host_matches_dns | tls/x509/chain.mojo | s/if len\(ip\) > 0:/if len(ip) > 99:/ | chain
+leaf_signature_unchecked | tls/x509/chain.mojo | s/range\(k - 1, 0, -1\)/range(k - 1, 1, -1)/ | chain
+leaf_eku_ignored | tls/x509/chain.mojo | s/if not \(leaf.eku_client if client else leaf.eku_server\):  # false without an EKU too/if False:/ | chain
+pss_salt_assumed | tls/x509/sigs.mojo | s/h, sig, c.pss_salt\)/h, sig, 32)/ | chain
+unknown_critical_ignored | tls/x509/cert.mojo | s/self.unknown_critical = True/self.unknown_critical = False/ | chain
+chain_cap_removed | tls/x509/chain.mojo | s/len\(chain\) > MAX_CHAIN/len(chain) > 99/ | chain
+host_case_sensitive | tls/x509/chain.mojo | s/b\[i\] \+ 32 if b\[i\] >= 65 and b\[i\] <= 90 else b\[i\]/b[i]/ | chain
+trusted_leaf_needs_ca | tls/x509/chain.mojo | s/    if k > 0:\n        anchor_rules\(root, nsi\)\n    else:\n        _profile\(root, False\)/    anchor_rules(root, nsi)/ | chain
+key_pub_mismatch_ignored | tls/x509/key.mojo | s/if len\(given\) > 0 and not same\(given, k.pub\):/if False:/ | keys
+key_rsa_consistency_dropped | tls/x509/key.mojo | s/    if not _rsa_ok\(k\):/    if False:/ | keys
+key_ec_range_dropped | tls/asym/ec.mojo | s/ or not in_range\(from_be\[4\]\(d\), c.o\):/:/ | keys
+key_encrypted_header_ignored | tls/x509/key.mojo | s/same\(body\[i : i \+ 10\], "Proc-Type:".as_bytes\(\)\)/False/ | keys
+key_small_rsa_allowed | tls/x509/key.mojo | s/rsa_bits\(k.pub\) < MIN_RSA_BITS/rsa_bits(k.pub) < 512/ | keys
+key_wipe_disabled | tls/x509/key.mojo | s/    if len\(l\) > 0:\n        _ = external_call\["explicit_bzero", Int\]\(l.unsafe_ptr\(\), len\(l\)\)/    if len(l) > 99999999:\n        _ = external_call["explicit_bzero", Int](l.unsafe_ptr(), len(l))/ | keys
+key_matches_always | tls/x509/key.mojo | s/return c.key_kind == self.kind and same\(c.key_a, self.pub\)/return True/ | keys
+key_rsa_d_check_dropped | tls/x509/key.mojo | s/if not rsa_d_ok\(k.pub, k.e, k.d\):/if False:/ | keys
+selfissued_counted_in_pathlen | tls/x509/chain.mojo | s/            if not c.self_issued\(\):\n                nsi \+= 1/            nsi += 1/ | chain
+nc_applies_to_selfissued | tls/x509/chain.mojo | s/if q == 0 or not chain\[below\[q\]\].self_issued\(\):  # name constraints skip self-issued intermediates/if True:/ | chain
+nc_wildcard_stem_only | tls/x509/chain.mojo | s/ or \(wild and _one_label_below\(lb, stem\)\)// | chain
+ca_without_keycertsign_ok | tls/x509/chain.mojo | s/if c.has_ku and \(\(c.ku & KU_KEY_CERT_SIGN\) != 0\) != c.is_ca:/if False:/ | chain
+leaf_weak_rsa_ok | tls/x509/chain.mojo | s/rsa_bits\(leaf.key_a\) < MIN_RSA_BITS or rsa_bits\(leaf.key_a\) % 8 != 0/False/ | chain
+nc_malformed_name_ok | tls/x509/chain.mojo | s/if _bad_name\(ln\):/if False:/ | chain
+ca_empty_subject_ok | tls/x509/chain.mojo | s/if len\(c.subject\(\)\) <= 2:/if False:/ | chain
+nc_empty_ext_ok | tls/x509/cert.mojo | s/        if s.done\(\):\n            raise Error\("tls: x509: empty name constraints"\)/        pass/ | limbo
+root_ku_without_certsign_ok | tls/x509/chain.mojo | s/if c.has_ku and \(c.ku & KU_KEY_CERT_SIGN\) == 0:/if False:/ | limbo
+serial_unchecked | tls/x509/cert.mojo | s/return s\[0\] < 0x80 and not \(len\(s\) == 1 and s\[0\] == 0\) and len\(s\) <= 20/return True/ | limbo
+aki_not_required | tls/x509/chain.mojo | s/if not c.self_issued\(\) and len\(c.aki_kid\) == 0:/if False:/ | limbo
+ski_not_required | tls/x509/chain.mojo | s/not anchor and c.has_bc and c.is_ca and not c.has_ski/False/ | limbo
+key_id_critical_ok | tls/x509/chain.mojo | s/if c.ski_crit or c.aki_crit:/if False:/ | limbo
+root_aki_unchecked | tls/x509/chain.mojo | s/if anchor and c.self_issued\(\) and c.has_aki and/if False and/ | limbo
+anchor_bc_noncritical_ok | tls/x509/chain.mojo | s/if not c.bc_crit:/if False:/ | limbo
+anchor_unknown_critical_ok | tls/x509/chain.mojo | s/    if c.unknown_critical:\n        raise Error\("tls: x509: unknown critical extension"\)/    pass/ | limbo
+aia_critical_ok | tls/x509/chain.mojo | s/if c.aia_crit:/if False:/ | limbo
+nc_noncritical_ok | tls/x509/chain.mojo | s/if c.has_nc and not c.nc_crit:/if False:/ | limbo
+pc_noncritical_ok | tls/x509/chain.mojo | s/if c.pc_noncrit:/if False:/ | limbo
+nc_in_leaf_ok | tls/x509/chain.mojo | s/    if leaf.has_nc:/    if False:/ | limbo
+nc_leading_period_ok | tls/x509/cert.mojo | s/if t == 0x82 and len\(base\) > 0 and base\[0\] == 46:/if False:/ | limbo
+nc_subtree_cap_removed | tls/x509/cert.mojo | s/MAX_NC_SUBTREES = 256/MAX_NC_SUBTREES = 100000/ | chain
+san_cap_removed | tls/x509/cert.mojo | s/MAX_SAN_NAMES = 1024/MAX_SAN_NAMES = 100000/ | chain
+dos_caps_all_removed | tls/x509/cert.mojo | s/MAX_SAN_NAMES = 1024/MAX_SAN_NAMES = 100000/; s/MAX_NC_SUBTREES = 256/MAX_NC_SUBTREES = 100000/ | limbo
+san_critical_rule_dropped | tls/x509/chain.mojo | s/if leaf.has_san and leaf.san_crit != empty_subject:/if False:/ | limbo
+san_syntax_unchecked | tls/x509/chain.mojo | s/if not _valid_dns\(copy_of\(view\(n\)\)\):/if False:/ | limbo
+leaf_ca_ok | tls/x509/chain.mojo | s/if leaf.has_bc and leaf.is_ca:/if False:/ | chain
+rsa_not_multiple_of_8_ok | tls/x509/chain.mojo | s/ or rsa_bits\(leaf.key_a\) % 8 != 0// | limbo
+public_suffix_wildcard_ok | tls/x509/chain.mojo | s/if len\(n\) > 2 and n\[0\] == 42 and public_suffix/if False and public_suffix/ | limbo
+public_suffix_list_empty | tls/x509/chain.mojo | s/return _listed\(x\) or _listed\("\*\." \+ String\(x\[byte=dot \+ 1 :\]\)\)/return False/ | limbo
