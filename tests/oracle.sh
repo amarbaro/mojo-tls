@@ -58,7 +58,8 @@ for i in $(seq "$N"); do
   h=$(hexrand 48); echo "$h" | unhexb | openssl pkeyutl -sign -inkey $O/k384.pem -out $O/s384.der
   s=$(hexb < $O/s384.der)
   [ "$($T p384-verify "$p" "$h" "$s")" = 1 ] && [ "$($T p384-verify "$p" "$(flip "$h")" "$s")" = 0 ] || good=0
-  d=$(openssl ec -in $O/k384.pem -outform DER 2>/dev/null | tail -c +9 | head -c 48 | hexb)  # SEC1: 30 81 a4 02 01 01 04 30 <d>
+  openssl ec -in $O/k384.pem -outform DER -out $O/k384.der 2>/dev/null
+  d=$(od -An -v -tx1 -j8 -N48 $O/k384.der | tr -d ' \n')  # SEC1: 30 81 a4 02 01 01 04 30 <d>; od, not head: an early-closing pipe EPIPEs under pipefail
   echo "$h" | unhexb > $O/h384.bin
   $T p384-sign "$d" "$h" | unhexb > $O/ours384.der
   openssl pkeyutl -verify -pubin -inkey <(openssl ec -in $O/k384.pem -pubout 2>/dev/null) -in $O/h384.bin -sigfile $O/ours384.der >/dev/null 2>&1 || goods=0
